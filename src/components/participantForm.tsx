@@ -1,22 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
+import "../styles/ParticipantForm.css"; // Import the CSS file for styling
+import { Form } from "../interfaces/Form";
+import { Answer } from "../interfaces/Answer";
 
-interface Question {
-  type: string;
-  prompt: string;
-  options?: string[];
-}
-
-interface Form {
-  title: string;
-  questions: Question[];
-}
-
-interface Answer {
-  question: string; // Stores the question prompt
-  response: string | string[]; // Stores the user's response
-}
 
 const ParticipantForm: React.FC = () => {
   const { formId } = useParams<{ formId: string }>();
@@ -38,13 +26,13 @@ const ParticipantForm: React.FC = () => {
   };
 
   const submitResponses = async () => {
-    // Prepare the data to include both questions and responses
-    const answers: Answer[] = form?.questions.map((q, i) => ({
-      question: q.prompt,
-      response: responses[i] || "",
-    })) || [];
+    const answers: Answer[] =
+      form?.questions.map((q, i) => ({
+        question: q.prompt,
+        response: responses[i] || "",
+      })) || [];
 
-    const data = {form_id: formId, answers: answers};
+    const data = { form_id: formId, answers: answers };
 
     await axios.post("http://localhost:8000/api/responses", data);
     alert("Responses submitted!");
@@ -53,37 +41,43 @@ const ParticipantForm: React.FC = () => {
   if (!form) return <p>Loading...</p>;
 
   return (
-    <div>
-      <h1>{form.title}</h1>
-      {form.questions.map((q, i) => (
-        <div key={i} style={{ marginBottom: "1rem" }}>
-          <label>{q.prompt}</label>
-          {q.type === "text" && (
-            <input
-              type="text"
-              onChange={(e) => handleResponseChange(i, e.target.value)}
-            />
-          )}
-          {q.type === "multiple-choice" && q.options && (
-            <div>
-              {q.options.map((option, optionIndex) => (
-                <div key={optionIndex}>
-                  <label>
-                    <input
-                      type="radio"
-                      name={`question-${i}`}
-                      value={option}
-                      onChange={(e) => handleResponseChange(i, e.target.value)}
-                    />
-                    {option}
-                  </label>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      ))}
-      <button onClick={submitResponses}>Submit</button>
+    <div className="participant-form">
+      <h1 className="form-title">{form.title}</h1>
+      <div className="questions-container">
+        {form.questions.map((q, i) => (
+          <div key={i} className="question-item">
+            <label className="question-prompt">{q.prompt}</label>
+            {q.type === "text" && (
+              <input
+                type="text"
+                className="text-input"
+                onChange={(e) => handleResponseChange(i, e.target.value)}
+              />
+            )}
+            {q.type === "multiple-choice" && q.options && (
+              <div className="options-container">
+                {q.options.map((option, optionIndex) => (
+                  <div key={optionIndex} className="option-item">
+                    <label>
+                      <input
+                        type="radio"
+                        className="radio-input"
+                        name={`question-${i}`}
+                        value={option}
+                        onChange={(e) => handleResponseChange(i, e.target.value)}
+                      />
+                      {option}
+                    </label>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      <button className="submit-btn" onClick={submitResponses}>
+        Submit
+      </button>
     </div>
   );
 };

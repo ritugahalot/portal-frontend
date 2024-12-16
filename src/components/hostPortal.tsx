@@ -1,11 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
-
-interface Question {
-  type: string;
-  prompt: string;
-  options?: string[]; // Add optional property for multiple-choice questions
-}
+import "../styles/HostPortal.css";
+import { Question } from "../interfaces/Question";
 
 const HostPortal: React.FC = () => {
   const [title, setTitle] = useState("");
@@ -50,49 +46,63 @@ const HostPortal: React.FC = () => {
   };
 
   return (
-    <div>
-      <h1>Host Portal</h1>
+    <div className="host-portal">
+      <h1 className="host-portal-title">Host Portal</h1>
       <input
+        className="host-portal-input title-input"
         type="text"
         placeholder="Form Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
       />
-      {questions.map((q, i) => (
-        <div key={i} style={{ marginBottom: "1rem" }}>
-          <select
-            value={q.type}
-            onChange={(e) => handleQuestionTypeChange(i, e.target.value)}
-          >
-            <option value="text">Text</option>
-            <option value="multiple-choice">Multiple Choice</option>
-          </select>
-          <input
-            type="text"
-            placeholder={`Question ${i + 1}`}
-            value={q.prompt}
-            onChange={(e) => handleQuestionChange(i, e.target.value)}
-          />
-          {q.type === "multiple-choice" && (
-            <div>
-              {q.options?.map((option, optionIndex) => (
-                <div key={optionIndex} style={{ display: "flex", alignItems: "center" }}>
-                  <input
-                    type="text"
-                    placeholder={`Option ${optionIndex + 1}`}
-                    value={option}
-                    onChange={(e) => handleOptionChange(i, optionIndex, e.target.value)}
-                  />
-                </div>
-              ))}
-              <button onClick={() => addOption(i)}>Add Option</button>
-            </div>
-          )}
-        </div>
-      ))}
-      <button onClick={addQuestion}>Add Question</button>
-      <button onClick={createForm}>Create Form</button>
-      {link && <p>Form Link: {link}</p>}
+      <div className="questions-container">
+        {questions.map((q, i) => (
+          <div key={i} className="question-item">
+            <select
+              className="question-type-select"
+              value={q.type}
+              onChange={(e) => handleQuestionTypeChange(i, e.target.value)}
+            >
+              <option value="text">Text</option>
+              <option value="multiple-choice">Multiple Choice</option>
+            </select>
+            <input
+              className="question-prompt-input"
+              type="text"
+              placeholder={`Question ${i + 1}`}
+              value={q.prompt}
+              onChange={(e) => handleQuestionChange(i, e.target.value)}
+            />
+            {q.type === "multiple-choice" && (
+              <div className="options-container">
+                {q.options?.map((option, optionIndex) => (
+                  <div key={optionIndex} className="option-item">
+                    <input
+                      className="option-input"
+                      type="text"
+                      placeholder={`Option ${optionIndex + 1}`}
+                      value={option}
+                      onChange={(e) => handleOptionChange(i, optionIndex, e.target.value)}
+                    />
+                  </div>
+                ))}
+                <button className="add-option-btn" onClick={() => addOption(i)}>
+                  Add Option
+                </button>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+      <div className="buttons-container">
+        <button className="add-question-btn" onClick={addQuestion}>
+          Add Question
+        </button>
+        <button className="create-form-btn" onClick={createForm}>
+          Create Form
+        </button>
+      </div>
+      {link && <p className="form-link">Form Link: <a href={link}>{link}</a></p>}
     </div>
   );
 };
